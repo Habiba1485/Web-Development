@@ -78,4 +78,4 @@
 ## 🎨 5. UI Design
 
 Here is a preview of the StayBook interface:
-[Click here to view the full UI mockups](https://app.visily.ai/projects/dee71613-4fe7-4b09-b4cf-feffcdef4df9/boards/2685205/presenter?play-mode=All+screens)
+[Click here to view the full UI mockups]([https://app.visily.ai/projects/dee71613-4fe7-4b09-b4cf-feffcdef4df9/boards/2685205/presenter?play-mode=All+screens](https://www.figma.com/make/7k58Np4c7o1mGJLN1BnqCe/StayBook-Homepage-Design?t=Xa6J4zhgS90fRTm7-1))
