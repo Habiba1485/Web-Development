@@ -177,12 +177,6 @@ The user's role is stored in the JWT returned by the backend and is used by the 
 
 There is no Admin role in this version of StayBook.
 
-## Important Notes
-
-- Do not upload the real `.env` file to GitHub.
-- Do not upload `node_modules`.
-- Do not expose MongoDB passwords, JWT secrets, or other private credentials in the repository.
-- The payment page is a UI/payment simulation and does not connect to a real payment gateway.
 
 ## API Base URL
 
