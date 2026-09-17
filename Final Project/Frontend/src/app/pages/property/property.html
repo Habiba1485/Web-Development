@@ -1,0 +1,197 @@
+<div class="property-page">
+  <header class="site-header">
+    <div class="container inner">
+      <a routerLink="/home" class="back-link">← <span>Back</span></a>
+      <a routerLink="/home" class="logo">StayBook</a>
+      <div class="property-top-actions">
+        @if (authService.isLoggedInSignal()) {
+          <a routerLink="/trips" class="become-host">My Trips</a>
+        } @else {
+          <a routerLink="/signin" class="become-host">Sign In</a>
+        }
+      </div>
+    </div>
+  </header>
+
+  <main class="container property-container">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <p>Loading property details...</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="error-state">
+        <p>{{ errorMessage() }}</p>
+        <a routerLink="/home" class="primary-button">Back to Home</a>
+      </div>
+    } @else if (property(); as place) {
+      <div class="breadcrumb">
+        <a routerLink="/home">Home</a><span>›</span>
+        <span>{{ place.location }}</span><span>›</span>
+        <strong>{{ place.title }}</strong>
+      </div>
+
+      <section class="gallery">
+        <div class="gallery-main">
+          <img [src]="getImageUrl(place.images[0])" [alt]="place.title">
+        </div>
+        <div class="gallery-side">
+          <div><img [src]="getImageUrl(place.images[1] || place.images[0])" [alt]="place.title"></div>
+          <div><img [src]="getImageUrl(place.images[2] || place.images[0])" [alt]="place.title"></div>
+          <div class="gallery-last">
+            <img [src]="getImageUrl(place.images[3] || place.images[0])" [alt]="place.title">
+            <span>Show all photos</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="property-layout">
+        <section class="details">
+          <div class="heading-block">
+            <span class="type-badge">{{ place.propertyType }}</span>
+            @if (place.verificationStatus === 'verified') {
+              <span class="type-badge" style="background:#10b981; color:white; margin-left:8px;">✓ Verified Property</span>
+            }
+            <h1>{{ place.title }}</h1>
+            <p class="location">{{ place.location }}</p>
+            <div class="quick-info">
+              <span>👥 {{ place.maxGuests }} guests</span><span>•</span>
+              <span>🛏 {{ place.bedrooms }} bedrooms</span><span>•</span>
+              <span>🚿 {{ place.bathrooms }} bathrooms</span><span>•</span>
+              <span>★ {{ place.rating || 5.0 }}</span>
+            </div>
+          </div>
+
+          <div class="host-block">
+            <div>
+              <div class="host-name">
+                <h2>Hosted by {{ place.host?.name || place.host || 'StayBook Host' }}</h2>
+                <span>Verified Host</span>
+              </div>
+              <p>Highly rated host · Great response time</p>
+            </div>
+            <img
+              [src]="'http://localhost:5000/api/v1/uploads/users/' + (place.host?.avatar || 'default-user.webp')"
+              [alt]="place.host?.name || 'Host avatar'"
+            />
+          </div>
+
+          <div class="highlights">
+            @for (item of highlights; track item.title) {
+              <div class="highlight">
+                <span>{{ item.icon }}</span>
+                <div>
+                  <h3>{{ item.title }}</h3>
+                  <p>{{ item.desc }}</p>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="tabs">
+            @for (tab of tabs; track tab) {
+              <button
+                type="button"
+                [class.active]="activeTab() === tab"
+                (click)="activeTab.set(tab)"
+              >
+                {{ tab === 'overview' ? 'Overview' : 'Reviews (' + reviews().length + ')' }}
+              </button>
+            }
+          </div>
+
+          @if (activeTab() === 'overview') {
+            <section class="content-section">
+              <h2>About this space</h2>
+              <p>{{ place.description }}</p>
+            </section>
+            <section class="content-section amenities-section">
+              <h2>What this place offers</h2>
+              <div class="amenities-grid">
+                @for (amenity of displayedAmenities(); track amenity) {
+                  <div><span>{{ iconForAmenity(amenity) }}</span>{{ amenity }}</div>
+                }
+              </div>
+              @if (!showAllAmenities() && (place.amenities.length > 8)) {
+                <button type="button" class="outline-button" (click)="showAll()">
+                  Show all {{ place.amenities.length }} amenities
+                </button>
+              }
+            </section>
+          }
+
+          @if (activeTab() === 'reviews') {
+            <section class="content-section reviews-section">
+              <div class="review-summary">
+                ★ {{ place.rating || 5.0 }} <span>·</span> {{ reviews().length }} reviews
+              </div>
+              @for (review of reviews(); track review._id) {
+                <article class="review-card">
+                  <div class="review-user">
+                    <img
+                      [src]="'http://localhost:5000/api/v1/uploads/users/' + (review.guest?.avatar || 'default-user.webp')"
+                      [alt]="review.guest?.name || 'Guest'"
+                    />
+                    <div>
+                      <strong>{{ review.guest?.name || 'Guest' }}</strong>
+                      <span>Rating: {{ review.rating }}/5</span>
+                    </div>
+                  </div>
+                  <div class="stars">★ {{ review.rating }} / 5</div>
+                  <p>{{ review.comment }}</p>
+                </article>
+              } @empty {
+                <p>No reviews yet for this property.</p>
+              }
+            </section>
+          }
+        </section>
+
+        <aside class="booking-column">
+          <div class="booking-card">
+            <div class="booking-card-head">
+              <div>
+                <span class="price">${{ place.price }}</span>
+                <span class="per-night"> / night</span>
+              </div>
+              <span class="rating-small">★ {{ place.rating || 5.0 }}</span>
+            </div>
+
+            <div class="booking-inputs">
+              <div>
+                <label>CHECK-IN</label>
+                <input type="date" [value]="checkin()" (change)="setCheckin($any($event.target).value)">
+              </div>
+              <div>
+                <label>CHECK-OUT</label>
+                <input type="date" [value]="checkout()" (change)="setCheckout($any($event.target).value)">
+              </div>
+              <div class="guests">
+                <label>GUESTS</label>
+                <select [value]="guests()" (change)="setGuests($any($event.target).value)">
+                  @for (n of guestOptions(); track n) {
+                    <option [value]="n">{{ n }} guest{{ n > 1 ? 's' : '' }}</option>
+                  }
+                </select>
+              </div>
+            </div>
+
+            <button type="button" class="reserve-button" (click)="reserve()">Reserve</button>
+            <p class="no-charge">You won't be charged yet</p>
+
+            <div class="price-lines">
+              <div><span>${{ place.price }} × {{ nights() }} nights</span><strong>${{ subtotal() }}</strong></div>
+              <div><span>Cleaning fee</span><strong>${{ cleaningFee }}</strong></div>
+              <div><span>StayBook service fee</span><strong>${{ serviceFee }}</strong></div>
+              <div class="total"><span>Total before taxes</span><strong>${{ total() }}</strong></div>
+            </div>
+          </div>
+          <div class="aircover">✓ Protected by StayBook AirCover</div>
+          <div class="cancellation">
+            <strong>Free cancellation</strong>
+            <p>Cancel up to 48 hours before check-in for a full refund.</p>
+          </div>
+        </aside>
+      </div>
+    }
+  </main>
+</div>

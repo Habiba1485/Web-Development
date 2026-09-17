@@ -1,0 +1,187 @@
+<div class="home-page">
+  <header class="site-header">
+    <div class="container inner">
+      <a routerLink="/home" class="logo">StayBook</a>
+
+      <nav class="main-nav">
+        <a routerLink="/home" class="active">Home</a>
+        <a routerLink="/trips">My Trips</a>
+        @if (authService.isLoggedInSignal() && authService.getRole() === 'host') {
+          <a routerLink="/host">Host Dashboard</a>
+        }
+      </nav>
+
+      <div class="header-actions">
+        @if (authService.isLoggedInSignal()) {
+          @if (authService.getRole() === 'host') {
+            <a routerLink="/host" class="become-host">Host Portal</a>
+          } @else {
+            <a routerLink="/trips" class="become-host">My Trips</a>
+          }
+          <button type="button" class="profile-button" (click)="logout()" title="Logout">Logout</button>
+        } @else {
+          <a routerLink="/signin" class="become-host">Become a Host / Sign In</a>
+          <a routerLink="/signin" class="profile-button">Sign In</a>
+        }
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <img
+      src="https://images.unsplash.com/photo-1596178067639-5c6e68aea6dc?w=1600&h=900&fit=crop&auto=format"
+      alt="Luxury villa"
+    />
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <p class="eyebrow light">Over 2 million stays worldwide</p>
+      <h1>Find your perfect <em>getaway</em></h1>
+      <p class="hero-subtitle">
+        Discover handpicked villas, cottages, and luxury homes around the world
+      </p>
+
+      <div class="search-card">
+        <div class="search-field wide">
+          <label>WHERE</label>
+          <input
+            type="text"
+            placeholder="Search destinations or title..."
+            [ngModel]="location()"
+            (ngModelChange)="location.set($event)"
+          />
+        </div>
+
+        <div class="search-field">
+          <label>CHECK IN</label>
+          <input
+            type="date"
+            [ngModel]="checkin()"
+            (ngModelChange)="checkin.set($event)"
+          />
+        </div>
+
+        <div class="search-field">
+          <label>CHECK OUT</label>
+          <input
+            type="date"
+            [ngModel]="checkout()"
+            (ngModelChange)="checkout.set($event)"
+          />
+        </div>
+
+        <div class="search-field small">
+          <label>GUESTS</label>
+          <select
+            [ngModel]="guests()"
+            (ngModelChange)="guests.set($event)"
+          >
+            @for (n of [1,2,3,4,5,6,7,8]; track n) {
+              <option [value]="n">{{ n }} guest{{ n > 1 ? 's' : '' }}</option>
+            }
+          </select>
+        </div>
+
+        <button class="search-button" type="button" (click)="search()">Search</button>
+      </div>
+
+      <div class="trust-row">
+        <span>✓ No booking fees</span>
+        <span>✓ Free cancellation</span>
+        <span>✓ 24/7 support</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="category-bar">
+    <div class="container category-inner">
+      @for (category of categories; track category.label) {
+        <button
+          type="button"
+          class="category-pill"
+          [class.active]="activeCategory() === category.label"
+          (click)="setCategory(category.label)"
+        >
+          <span>{{ category.icon }}</span>
+          {{ category.label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <section class="container properties-section">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">HANDPICKED FOR YOU</p>
+        <h2>Popular properties</h2>
+      </div>
+      @if (filteredProperties().length > 0) {
+        <a [routerLink]="['/property', filteredProperties()[0]._id]" class="view-all">View all →</a>
+      }
+    </div>
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <p>Loading properties from server...</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="error-state">
+        <p>{{ errorMessage() }}</p>
+        <button (click)="loadProperties()" class="primary-button">Try Again</button>
+      </div>
+    } @else {
+      <div class="property-grid">
+        @for (property of filteredProperties(); track property._id) {
+          <article class="property-card" [routerLink]="['/property', property._id]">
+            <div class="property-image">
+              <img [src]="getImageUrl(property.images[0])" [alt]="property.title" />
+              @if (property.verificationStatus === 'verified') {
+                <span class="property-tag">✓ Verified</span>
+              }
+              <button
+                type="button"
+                class="heart"
+                [class.saved]="saved().includes(property._id)"
+                (click)="$event.stopPropagation(); toggleSave(property._id)"
+              >
+                {{ saved().includes(property._id) ? '♥' : '♡' }}
+              </button>
+            </div>
+
+            <div class="property-info">
+              <div class="title-row">
+                <h3>{{ property.title }}</h3>
+                <span class="rating">★ {{ property.rating || 5.0 }}</span>
+              </div>
+              <p>{{ property.location }} • {{ property.propertyType }}</p>
+              <strong>${{ property.price }} <small>/ night</small></strong>
+            </div>
+          </article>
+        }
+
+        @empty {
+          <div class="empty-grid">No stays match your search criteria.</div>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="container host-cta">
+    <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1400&h=500&fit=crop&auto=format" alt="Host a beautiful space" />
+    <div class="host-cta-overlay"></div>
+    <div class="host-cta-content">
+      <p class="eyebrow light">FOR PROPERTY OWNERS</p>
+      <h2>Turn your space into income</h2>
+      <p>Join thousands of hosts earning with StayBook. We handle the hard parts.</p>
+      <a routerLink="/host" class="primary-button">Start hosting today</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <a routerLink="/home" class="logo">StayBook</a>
+      <p>© 2026 StayBook Inc. All rights reserved.</p>
+      <div class="footer-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Help</a></div>
+    </div>
+  </footer>
+</div>

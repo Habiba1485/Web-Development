@@ -1,0 +1,76 @@
+.property-page { min-height: 100vh; background: var(--background); }
+.back-link { color: var(--text-muted); font-size: 13px; text-decoration: none; }
+.back-link:hover { color: var(--text); }
+.property-top-actions { display:flex; gap:18px; }
+.property-top-actions button { border:0; background:none; color:var(--text-muted); font-size:12px; font-weight:600; }
+.property-container { padding: 30px 0 70px; }
+.breadcrumb { display:flex; gap:8px; color:var(--text-muted); font-size:11px; margin-bottom:18px; }
+.breadcrumb a { text-decoration:none; color:inherit; }
+.breadcrumb strong { color:var(--text); }
+.gallery { height:470px; display:grid; grid-template-columns:1.4fr 1fr; gap:8px; overflow:hidden; border-radius:18px; margin-bottom:44px; }
+.gallery-main, .gallery-side > div { overflow:hidden; background:#e8e2dc; }
+.gallery img { width:100%; height:100%; object-fit:cover; display:block; transition:.4s ease; }
+.gallery-main:hover img, .gallery-side > div:hover img { transform:scale(1.03); }
+.gallery-side { display:grid; grid-template-rows:repeat(3,1fr); gap:8px; }
+.gallery-last { position:relative; }
+.gallery-last span { position:absolute; bottom:12px; right:12px; background:rgba(255,255,255,.92); padding:8px 12px; border-radius:10px; font-size:10px; font-weight:700; }
+.property-layout { display:grid; grid-template-columns:minmax(0,1fr) 360px; gap:70px; align-items:start; }
+.heading-block { padding-bottom:25px; border-bottom:1px solid var(--border); }
+.type-badge { display:inline-flex; padding:5px 10px; border-radius:999px; background:#f7ede8; color:var(--primary); font-size:10px; font-weight:700; text-transform:uppercase; }
+.heading-block h1 { font-family:var(--display); font-size:36px; line-height:1.15; font-weight:400; margin:11px 0 8px; }
+.location { color:var(--text-muted); margin:0 0 16px; font-size:13px; }
+.quick-info { display:flex; gap:8px; flex-wrap:wrap; color:#57514c; font-size:12px; }
+.host-block { display:flex; align-items:center; justify-content:space-between; padding:25px 0; border-bottom:1px solid var(--border); }
+.host-name { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.host-name h2 { margin:0; font-size:16px; }
+.host-name span { background:#f7ede8; color:var(--primary); padding:4px 8px; border-radius:999px; font-size:9px; font-weight:700; }
+.host-block p { margin:5px 0 0; color:var(--text-muted); font-size:12px; }
+.host-block img { width:54px; height:54px; border-radius:50%; object-fit:cover; }
+.highlights { padding:25px 0; border-bottom:1px solid var(--border); display:grid; gap:18px; }
+.highlight { display:flex; gap:14px; }
+.highlight > span { font-size:22px; }
+.highlight h3 { margin:0 0 3px; font-size:14px; }
+.highlight p { margin:0; color:var(--text-muted); font-size:12px; line-height:1.5; }
+.tabs { display:flex; gap:28px; border-bottom:1px solid var(--border); }
+.tabs button { padding:16px 0 13px; border:0; border-bottom:2px solid transparent; background:none; color:var(--text-muted); font-size:12px; font-weight:700; }
+.tabs button.active { color:var(--text); border-bottom-color:var(--text); }
+.content-section { padding:28px 0; border-bottom:1px solid var(--border); }
+.content-section:last-child { border-bottom:0; }
+.content-section h2 { margin:0 0 14px; font-family:var(--display); font-size:24px; font-weight:400; }
+.content-section > p { margin:0; color:var(--text-muted); font-size:14px; line-height:1.8; }
+.amenities-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:17px; margin-bottom:20px; }
+.amenities-grid div { display:flex; gap:10px; align-items:center; color:#49433f; font-size:13px; }
+.amenities-grid div span { width:25px; }
+.booking-column { position:sticky; top:90px; }
+.booking-card { background:white; border:1px solid var(--border); border-radius:17px; padding:23px; box-shadow:0 15px 35px rgba(25,22,20,.07); }
+.booking-card-head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:20px; }
+.price { font-family:var(--display); font-size:29px; }
+.per-night { color:var(--text-muted); font-size:11px; }
+.rating-small { font-size:11px; font-weight:700; }
+.booking-inputs { border:1px solid var(--border); border-radius:11px; overflow:hidden; display:grid; grid-template-columns:1fr 1fr; }
+.booking-inputs > div { padding:12px; }
+.booking-inputs > div:first-child { border-right:1px solid var(--border); }
+.booking-inputs .guests { grid-column:1/-1; border-top:1px solid var(--border); }
+.booking-inputs label { display:block; font-size:8px; letter-spacing:.14em; font-weight:700; color:#4a4541; margin-bottom:6px; }
+.booking-inputs input, .booking-inputs select { width:100%; border:0; outline:none; background:transparent; color:var(--text); font-size:12px; }
+.reserve-button { width:100%; margin-top:14px; padding:14px; border:0; border-radius:10px; background:var(--primary); color:white; font-size:13px; font-weight:700; }
+.reserve-button:hover { background:var(--primary-dark); }
+.no-charge { margin:9px 0 17px; text-align:center; color:var(--text-muted); font-size:10px; }
+.price-lines { display:grid; gap:13px; }
+.price-lines > div { display:flex; justify-content:space-between; font-size:11px; color:#57514c; }
+.price-lines .total { padding-top:14px; border-top:1px solid var(--border); color:var(--text); font-weight:700; }
+.aircover { text-align:center; color:var(--text-muted); font-size:10px; margin:14px 0; }
+.cancellation { background:var(--muted); padding:13px; border-radius:10px; text-align:center; }
+.cancellation strong { font-size:11px; }
+.cancellation p { margin:5px 0 0; color:var(--text-muted); font-size:10px; }
+.review-summary { font-family:var(--display); font-size:28px; margin-bottom:26px; }
+.review-summary span { font-family:var(--sans); font-size:12px; color:var(--text-muted); margin:0 6px; }
+.review-card { padding:0 0 25px; margin-bottom:25px; border-bottom:1px solid var(--border); }
+.review-user { display:flex; align-items:center; gap:10px; }
+.review-user img { width:40px; height:40px; border-radius:50%; object-fit:cover; }
+.review-user div { display:flex; flex-direction:column; gap:3px; }
+.review-user span { font-size:10px; color:var(--text-muted); }
+.stars { color:var(--primary); font-size:10px; margin:10px 0; letter-spacing:1px; }
+.review-card p { margin:0; color:var(--text-muted); font-size:12px; line-height:1.7; }
+@media (max-width:900px) { .property-layout { grid-template-columns:1fr; } .booking-column { position:static; } }
+@media (max-width:700px) { .gallery { grid-template-columns:1fr; height:320px; } .gallery-side { display:none; } .amenities-grid { grid-template-columns:1fr; } }

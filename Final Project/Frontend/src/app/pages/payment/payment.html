@@ -1,0 +1,138 @@
+<div class="flow-page">
+  <header class="site-header">
+    <div class="container inner">
+      <a routerLink="/home" class="logo">StayBook</a>
+      <span class="flow-lock">Secure payment</span>
+    </div>
+  </header>
+
+  <main class="container flow-container">
+    <div class="stepbar">
+      <div class="step"><span>✓</span><strong>Trip review</strong></div>
+      <div class="line"></div>
+      <div class="step active"><span>2</span><strong>Payment</strong></div>
+      <div class="line"></div>
+      <div class="step"><span>3</span><strong>Confirmed</strong></div>
+    </div>
+
+    <div class="flow-head">
+      <h1>Complete your booking</h1>
+      <p>Enter your payment details to confirm your stay.</p>
+    </div>
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <p>Loading payment summary...</p>
+      </div>
+    } @else if (errorMessage() && !property()) {
+      <div class="error-state">
+        <p>{{ errorMessage() }}</p>
+        <a routerLink="/home" class="primary-button">Back to Home</a>
+      </div>
+    } @else if (property(); as place) {
+      <div class="payment-layout">
+        <section class="payment-main">
+          <div class="form-card">
+            <h2>Billing information</h2>
+            <div class="form-grid">
+              <label>Full name
+                <input [(ngModel)]="fullName" name="fullName" placeholder="Sarah Johnson">
+              </label>
+              <label>Email address
+                <input type="email" [(ngModel)]="email" name="email" placeholder="sarah@example.com">
+              </label>
+              <label>Phone number
+                <input [(ngModel)]="phone" name="phone" placeholder="+20 10 0000 0000">
+              </label>
+              <label>Country
+                <select [(ngModel)]="country" name="country">
+                  <option>Egypt</option>
+                  <option>United States</option>
+                  <option>United Kingdom</option>
+                  <option>France</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <h2>Payment method</h2>
+            <div class="payment-methods">
+              <button type="button" [class.active]="paymentMethod() === 'card'" (click)="paymentMethod.set('card')">💳 Card</button>
+              <button type="button" [class.active]="paymentMethod() === 'google'" (click)="paymentMethod.set('google')">G Google Pay</button>
+              <button type="button" [class.active]="paymentMethod() === 'apple'" (click)="paymentMethod.set('apple')">● Apple Pay</button>
+            </div>
+
+            @if (paymentMethod() === 'card') {
+              <div class="form-grid card-grid">
+                <label class="full-field">Card number
+                  <input [(ngModel)]="cardNumber" name="cardNumber" (ngModelChange)="formatCard()" placeholder="1234 5678 9012 3456">
+                </label>
+                <label>Expiry date
+                  <input [(ngModel)]="expiry" name="expiry" (ngModelChange)="formatExpiry()" placeholder="MM/YY">
+                </label>
+                <label>CVC
+                  <input [(ngModel)]="cvc" name="cvc" maxlength="4" placeholder="123">
+                </label>
+                <label class="full-field">Cardholder name
+                  <input [(ngModel)]="cardName" name="cardName" placeholder="Sarah Johnson">
+                </label>
+              </div>
+            } @else {
+              <div class="alt-payment">
+                <strong>{{ paymentMethod() === 'google' ? 'Google Pay' : 'Apple Pay' }}</strong>
+                <p>You will be redirected to complete your payment securely.</p>
+              </div>
+            }
+
+            <label class="checkbox">
+              <input type="checkbox" [ngModel]="saveCard()" (ngModelChange)="saveCard.set($event)" name="saveCard">
+              <span>Save this payment method for future bookings</span>
+            </label>
+            <p class="security-note">🔒 Your payment information is encrypted and secure.</p>
+          </div>
+
+          @if (errorMessage()) {
+            <p class="form-error" style="color: red; margin-top: 10px;">{{ errorMessage() }}</p>
+          }
+        </section>
+
+        <aside class="payment-side">
+          <div class="form-card price-summary">
+            <h2>Property summary</h2>
+            <div class="mini-property">
+              <img [src]="getImageUrl(place.images[0])" [alt]="place.title">
+              <div>
+                <strong>{{ place.title }}</strong>
+                <span>{{ place.location }}</span>
+                <small>★ {{ place.rating || 5.0 }}</small>
+              </div>
+            </div>
+            <div class="trip-meta">
+              <div><span>Check-in</span><strong>{{ checkin() }}</strong></div>
+              <div><span>Check-out</span><strong>{{ checkout() }}</strong></div>
+              <div><span>Guests</span><strong>{{ guests() }} guest(s)</strong></div>
+              <div><span>Duration</span><strong>{{ nights() }} night(s)</strong></div>
+            </div>
+            <div class="price-line">
+              <span>${{ place.price }} × {{ nights() }} nights</span>
+              <strong>${{ subtotal() }}</strong>
+            </div>
+            <div class="price-line"><span>Cleaning fee</span><strong>${{ cleaningFee }}</strong></div>
+            <div class="price-line"><span>StayBook service fee</span><strong>${{ serviceFee }}</strong></div>
+            <div class="price-total"><span>Total</span><strong>${{ total() }}</strong></div>
+
+            <button type="button" class="primary-button full" [disabled]="isSubmitting()" (click)="pay()">
+              {{ isSubmitting() ? 'Processing booking...' : 'Pay and confirm booking' }}
+            </button>
+            <p class="terms">By clicking Pay and confirm booking, you agree to StayBook's booking policies.</p>
+          </div>
+          <div class="cancellation">
+            <strong>Free cancellation</strong>
+            <p>Cancellation terms are shown before payment and in your confirmation.</p>
+          </div>
+        </aside>
+      </div>
+    }
+  </main>
+</div>

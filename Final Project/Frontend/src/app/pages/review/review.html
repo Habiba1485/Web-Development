@@ -1,0 +1,61 @@
+<div class="review-page">
+  <header class="site-header">
+    <div class="container inner">
+      <a routerLink="/trips" class="back-link">← Back</a>
+      <a routerLink="/home" class="logo">StayBook</a>
+      <span></span>
+    </div>
+  </header>
+
+  @if (submitted()) {
+    <main class="review-success">
+      <div class="success-icon">✓</div>
+      <h1>Thanks for sharing!</h1>
+      <p>Your review helps other travellers find great stays. It has been submitted successfully.</p>
+      <a routerLink="/trips" class="primary-button">Back to my trips</a>
+      <a routerLink="/home" class="text-link">Explore more stays</a>
+    </main>
+  } @else {
+    <main class="container review-container">
+      <div class="review-head">
+        <h1>How was your stay?</h1>
+        <p>Your honest review helps hosts improve and helps other travellers decide.</p>
+      </div>
+
+      @if (property(); as place) {
+        <section class="review-property">
+          <img [src]="'http://localhost:5000/api/v1/uploads/properties/' + place.images[0]" [alt]="place.title">
+          <div>
+            <h2>{{ place.title }}</h2>
+            <p>{{ place.location }}</p>
+          </div>
+        </section>
+      }
+
+      <section class="review-card">
+        <h2>Overall rating</h2>
+        <div class="stars-large">
+          @for (star of [1,2,3,4,5]; track star) {
+            <button type="button" [class.selected]="star <= overallRating()" (click)="setRating(star)">★</button>
+          }
+        </div>
+        <strong class="rating-word">{{ ['','Poor','Fair','Good','Great','Exceptional'][overallRating()] }}</strong>
+      </section>
+
+      <section class="review-card">
+        <h2>Tell us about your experience</h2>
+        <p>What did you love? What could be improved?</p>
+        <textarea [(ngModel)]="comment" maxlength="500" rows="6" placeholder="Share details of your stay..."></textarea>
+        <div class="counter">{{ comment.length }} / 500</div>
+      </section>
+
+      @if (errorMessage()) {
+        <p style="color:red; margin-bottom:15px;">{{ errorMessage() }}</p>
+      }
+
+      <button type="button" class="submit-review" [disabled]="isSubmitting() || overallRating() === 0" (click)="submit()">
+        {{ isSubmitting() ? 'Submitting review...' : 'Submit review' }}
+      </button>
+    </main>
+  }
+</div>

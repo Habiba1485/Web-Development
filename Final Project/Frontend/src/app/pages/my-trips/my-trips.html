@@ -1,0 +1,83 @@
+<div class="trips-page">
+  <header class="site-header">
+    <div class="container inner">
+      <a routerLink="/home" class="logo">StayBook</a>
+      <div class="header-actions">
+        <a routerLink="/home" class="header-link">Explore stays</a>
+        <button type="button" class="profile-button" (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container trips-container">
+    <p class="eyebrow">YOUR TRAVEL STORY</p>
+    <h1>My trips</h1>
+    <p class="subtitle">All your bookings in one place.</p>
+
+    <div class="trip-tabs">
+      <button type="button" [class.active]="activeTab()==='upcoming'" (click)="activeTab.set('upcoming')">Upcoming</button>
+      <button type="button" [class.active]="activeTab()==='completed'" (click)="activeTab.set('completed')">Completed</button>
+      <button type="button" [class.active]="activeTab()==='cancelled'" (click)="activeTab.set('cancelled')">Cancelled</button>
+    </div>
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <p>Loading your trips...</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="error-state">
+        <p>{{ errorMessage() }}</p>
+        <a routerLink="/signin" class="primary-button">Sign In</a>
+      </div>
+    } @else {
+      <div class="trip-list">
+        @for (trip of visibleTrips(); track trip._id) {
+          <article class="trip-card">
+            <img [src]="getImageUrl(trip.property?.images ? trip.property.images[0] : '')" [alt]="trip.property?.title || 'Property image'">
+            <div class="trip-body">
+              <div class="trip-title">
+                <div>
+                  <h2>{{ trip.property?.title || 'StayBook Property' }}</h2>
+                  <p>{{ trip.property?.location || 'Location' }}</p>
+                </div>
+                <span class="badge"
+                  [class.badge-success]="trip.status==='confirmed'"
+                  [class.badge-warning]="trip.status==='pending'"
+                  [class.badge-danger]="trip.status==='cancelled' || trip.status==='declined'"
+                  [class.badge-neutral]="trip.status==='completed'">
+                  ● {{ trip.status }}
+                </span>
+              </div>
+
+              <div class="trip-details">
+                <div><span>CHECK-IN</span><strong>{{ trip.checkIn | date:'mediumDate' }}</strong></div>
+                <div><span>CHECK-OUT</span><strong>{{ trip.checkOut | date:'mediumDate' }}</strong></div>
+                <div><span>GUESTS</span><strong>{{ trip.guests }}</strong></div>
+                <div><span>TOTAL</span><strong>${{ trip.totalPrice }}</strong></div>
+              </div>
+
+              <p class="booking-id">Booking ID: <strong>#{{ trip._id }}</strong></p>
+
+              <div class="trip-actions">
+                <a [routerLink]="['/trip-details', trip._id]" class="primary-button">View trip</a>
+
+                @if (trip.status==='completed') {
+                  <a [routerLink]="['/review', trip._id]" [queryParams]="{ propertyId: trip.property?._id || trip.property }" class="outline-button">Write a review</a>
+                } @else if (trip.status==='confirmed' || trip.status==='pending') {
+                  <button type="button" class="outline-button" (click)="cancelBooking(trip._id)">Cancel booking</button>
+                }
+              </div>
+            </div>
+          </article>
+        } @empty {
+          <div class="empty-state">
+            <div>♡</div>
+            <h2>No trips yet in this tab</h2>
+            <p>Start exploring places to stay and build your travel story.</p>
+            <a routerLink="/home" class="primary-button">Explore stays</a>
+          </div>
+        }
+      </div>
+    }
+  </main>
+</div>

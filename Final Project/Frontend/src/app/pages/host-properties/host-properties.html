@@ -1,0 +1,128 @@
+<div class="host-app">
+  <aside class="sidebar">
+    <a routerLink="/home" class="side-logo">StayBook</a>
+    <p class="side-caption">HOST DASHBOARD</p>
+    <nav>
+      <a routerLink="/host">◫ <span>Overview</span></a>
+      <a routerLink="/host/properties" class="active">⌂ <span>My Properties</span></a>
+      <a routerLink="/host/bookings">□ <span>Bookings</span></a>
+      <a routerLink="/host/verification">✓ <span>Property Verification</span></a>
+    </nav>
+    <div class="host-profile" style="margin-top:auto; padding:15px; border-top:1px solid rgba(255,255,255,0.1);">
+      <button type="button" (click)="logout()" style="background:none; border:none; color:#f43f5e; cursor:pointer; font-size:12px; padding:0;">Logout</button>
+    </div>
+  </aside>
+
+  <main class="host-main">
+    <div class="page-head">
+      <div>
+        <p class="eyebrow">YOUR LISTINGS</p>
+        <h1>My Properties</h1>
+        <p>{{ properties().length }} total properties listed</p>
+      </div>
+      <button type="button" class="primary-button" (click)="openAddModal()">＋ Add property</button>
+    </div>
+
+    @if (isLoading()) {
+      <div class="loading-state"><p>Loading properties...</p></div>
+    } @else if (errorMessage()) {
+      <div class="error-state"><p>{{ errorMessage() }}</p></div>
+    } @else {
+      <div class="property-list">
+        @for (property of properties(); track property._id) {
+          <article class="host-property-card">
+            <img [src]="getImageUrl(property.images ? property.images[0] : '')" [alt]="property.title">
+            <div class="host-property-body">
+              <div class="host-property-title">
+                <div>
+                  <h2>{{ property.title }}</h2>
+                  <p>{{ property.location }} • {{ property.propertyType }}</p>
+                </div>
+                <span class="badge"
+                  [class.badge-success]="property.verificationStatus === 'verified'"
+                  [class.badge-warning]="property.verificationStatus === 'pending'"
+                  [class.badge-danger]="property.verificationStatus === 'not_submitted' || property.verificationStatus === 'rejected'">
+                  ● Verification: {{ property.verificationStatus || 'not_submitted' }}
+                </span>
+              </div>
+
+              <div class="host-property-meta">
+                <span>★ {{ property.rating || 5.0 }}</span>
+                <span>{{ property.maxGuests }} guests</span>
+                <span>{{ property.bedrooms }} bd / {{ property.bathrooms }} ba</span>
+                <strong>${{ property.price }} <small>/ night</small></strong>
+              </div>
+
+              <div class="property-actions">
+                <a [routerLink]="['/property', property._id]" class="outline-button">View</a>
+                <a [routerLink]="['/host/verification']" [queryParams]="{ propertyId: property._id }" class="outline-button" style="background:#0284c7; color:white; border:none;">Upload Documents</a>
+                <button type="button" class="outline-button" style="border-color:#ef4444; color:#ef4444;" (click)="deleteProperty(property._id)">Delete</button>
+              </div>
+            </div>
+          </article>
+        } @empty {
+          <div class="empty-state">
+            <h2>No properties listed yet</h2>
+            <p>Click "Add property" to create your first stay listing.</p>
+          </div>
+        }
+      </div>
+    }
+  </main>
+
+  <!-- Add Property Modal -->
+  @if (showAddModal()) {
+    <div class="modal-overlay" style="position:fixed; inset:0; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:999;">
+      <div class="modal-card" style="background:white; padding:30px; border-radius:12px; width:90%; max-width:600px; max-height:90vh; overflow-y:auto;">
+        <h2>Add New Property</h2>
+        <form (ngSubmit)="createProperty()">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:15px;">
+            <label style="grid-column: span 2;">Title *
+              <input style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;" [(ngModel)]="title" name="title" required placeholder="Luxury Beach Villa">
+            </label>
+            <label style="grid-column: span 2;">Location *
+              <input style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;" [(ngModel)]="location" name="location" required placeholder="Cairo, Egypt">
+            </label>
+            <label>Price per night ($) *
+              <input type="number" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;" [(ngModel)]="price" name="price" required>
+            </label>
+            <label>Property Type
+              <select style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;" [(ngModel)]="propertyType" name="propertyType">
+                <option value="apartment">Apartment</option>
+                <option value="house">House</option>
+                <option value="villa">Villa</option>
+                <option value="studio">Studio</option>
+                <option value="hotel">Hotel</option>
+              </select>
+            </label>
+            <label>Bedrooms
+              <input type="number" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;" [(ngModel)]="bedrooms" name="bedrooms">
+            </label>
+            <label>Bathrooms
+              <input type="number" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;" [(ngModel)]="bathrooms" name="bathrooms">
+            </label>
+            <label>Max Guests
+              <input type="number" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;" [(ngModel)]="maxGuests" name="maxGuests">
+            </label>
+            <label style="grid-column: span 2;">Description *
+              <textarea style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;" [(ngModel)]="description" name="description" rows="3" required placeholder="Spacious getaway..."></textarea>
+            </label>
+            <label style="grid-column: span 2;">Amenities (comma separated)
+              <input style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;" [(ngModel)]="amenitiesText" name="amenitiesText" placeholder="WiFi, AC, Pool">
+            </label>
+            <label style="grid-column: span 2;">Property Images
+              <input type="file" multiple (change)="onFileChange($event)" style="margin-top:6px;">
+            </label>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:20px;">
+            <button type="button" class="outline-button" (click)="closeAddModal()">Cancel</button>
+            <button type="submit" class="primary-button" [disabled]="isSubmitting()">
+              {{ isSubmitting() ? 'Creating...' : 'Create Property' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

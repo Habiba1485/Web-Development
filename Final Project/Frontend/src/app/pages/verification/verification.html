@@ -1,0 +1,98 @@
+<div class="verification-page">
+  <div class="verification-shell">
+    <aside class="verification-side">
+      <a routerLink="/home" class="logo">StayBook</a>
+      <p class="eyebrow light">HOST ONBOARDING</p>
+      <div class="side-step done"><span>✓</span><div><strong>Account</strong><small>Host profile</small></div></div>
+      <div class="side-step active"><span>2</span><div><strong>Verify property</strong><small>Required before publishing</small></div></div>
+      <div class="side-step"><span>3</span><div><strong>Publish</strong><small>Start accepting bookings</small></div></div>
+    </aside>
+
+    <main class="verification-main">
+      <a routerLink="/host" class="back-link">← Back to dashboard</a>
+
+      @if (!submitted()) {
+        <div class="verification-head">
+          <p class="eyebrow">PROPERTY VERIFICATION</p>
+          <h1>Verify your property</h1>
+          <p>Upload documents (ownership, registration, or authorization) to verify your property on StayBook.</p>
+        </div>
+
+        <section class="verification-card">
+          <div style="margin-bottom: 20px;">
+            <label style="font-weight:600; display:block; margin-bottom:8px;">Select Property to Verify *</label>
+            <select
+              style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; font-size:15px;"
+              [ngModel]="selectedPropertyId()"
+              (ngModelChange)="selectedPropertyId.set($event); updateSelectedProperty()">
+              @for (prop of properties(); track prop._id) {
+                <option [value]="prop._id">{{ prop.title }} ({{ prop.location }})</option>
+              }
+            </select>
+
+            @if (selectedProperty(); as prop) {
+              <div style="margin-top:10px; font-size:14px; color:#555;">
+                Current Status: <strong style="text-transform:uppercase; color:#0284c7;">{{ prop.verificationStatus || 'not_submitted' }}</strong>
+              </div>
+            }
+          </div>
+
+          <div class="document-copy">
+            <span class="doc-icon">✓</span>
+            <div>
+              <h2>Verification documents</h2>
+              <p>Accepted formats: PDF, JPG, PNG · Maximum 10 MB per file.</p>
+              <p class="required">Upload property ownership document, registration/license, or authorization document.</p>
+            </div>
+          </div>
+
+          <label class="upload-box">
+            <input type="file" accept=".pdf,.jpg,.jpeg,.png" multiple (change)="onFilesSelected($event)">
+            <span class="upload-icon">↑</span>
+            <strong>Upload documents</strong>
+            <small>Ownership document, property registration, or authorization</small>
+            <em>Click to browse or select files</em>
+          </label>
+
+          @if (files().length) {
+            <div class="file-list">
+              @for (file of files(); track file.name; let i = $index) {
+                <div class="file-item">
+                  <span>▧</span>
+                  <div>
+                    <strong>{{ file.name }}</strong>
+                    <small>{{ (file.size / 1024 / 1024).toFixed(2) }} MB</small>
+                  </div>
+                  <button type="button" (click)="removeFile(i)">×</button>
+                </div>
+              }
+            </div>
+          }
+
+          @if (error()) {
+            <p class="error" style="color:red; margin-top:10px;">{{ error() }}</p>
+          }
+
+          <button type="button" class="primary-button submit" [disabled]="isSubmitting() || files().length === 0" (click)="submit()">
+            {{ isSubmitting() ? 'Uploading documents...' : 'Submit for verification' }}
+          </button>
+
+          <p class="privacy">🔒 Your verification documents are encrypted and only used for verification.</p>
+        </section>
+      } @else {
+        <div class="submitted">
+          <div class="success-icon">✓</div>
+          <p class="eyebrow">SUBMITTED FOR REVIEW</p>
+          <h1>Verification is pending</h1>
+          <p>We've received your verification documents. Verification status for this property is now <strong>Pending verification</strong>.</p>
+          <div class="submitted-files">
+            @for (file of files(); track file.name) {
+              <span>✓ {{ file.name }}</span>
+            }
+          </div>
+          <a routerLink="/host/properties" class="primary-button">Back to My Properties</a>
+        </div>
+      }
+    </main>
+  </div>
+</div>

@@ -1,0 +1,129 @@
+<div class="host-app">
+  <aside class="sidebar">
+    <a routerLink="/home" class="side-logo">StayBook</a>
+    <p class="side-caption">HOST DASHBOARD</p>
+    <nav>
+      <a routerLink="/host" class="active">◫ <span>Overview</span></a>
+      <a routerLink="/host/properties">⌂ <span>My Properties</span></a>
+      <a routerLink="/host/bookings">□ <span>Bookings</span>
+        @if (bookings().some(b => b.status==='pending')) {
+          <b>{{ bookings().filter(b => b.status==='pending').length }}</b>
+        }
+      </a>
+      <a routerLink="/host/verification">✓ <span>Property Verification</span></a>
+    </nav>
+
+    <div class="host-profile" style="margin-top:auto; padding:15px; border-top:1px solid rgba(255,255,255,0.1);">
+      <div class="avatar" style="background:#f43f5e; color:white; border-radius:50%; width:36px; height:36px; display:flex; align-items:center; justify-content:center; font-weight:bold;">
+        H
+      </div>
+      <div style="margin-left:10px;">
+        <strong style="color:white; font-size:14px;">Host Portal</strong>
+        <br>
+        <button type="button" (click)="logout()" style="background:none; border:none; color:#f43f5e; cursor:pointer; font-size:12px; padding:0;">Logout</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="host-main">
+    <header class="host-header">
+      <div>
+        <h1>Welcome to Host Dashboard</h1>
+        <p>Manage your properties, review guest bookings, and submit verification documents.</p>
+      </div>
+    </header>
+
+    <section class="host-stats">
+      <div>
+        <span>TOTAL REVENUE</span>
+        <strong>${{ totalEarnings() }}</strong>
+        <small>From confirmed stays</small>
+      </div>
+      <div>
+        <span>MY PROPERTIES</span>
+        <strong>{{ myPropertiesCount() }}</strong>
+        <small>Total listed stays</small>
+      </div>
+      <div>
+        <span>TOTAL BOOKINGS</span>
+        <strong>{{ myBookingsCount() }}</strong>
+        <small>Guest reservations</small>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>My Properties Summary</h2>
+        <a routerLink="/host/properties">Manage All →</a>
+      </div>
+      <div class="booking-table">
+        <div class="table-head">
+          <span>Title</span>
+          <span>Type / Location</span>
+          <span>Price</span>
+          <span>Verification Status</span>
+          <span>Action</span>
+        </div>
+        @for (property of properties(); track property._id) {
+          <div class="table-row">
+            <strong>{{ property.title }}</strong>
+            <span>{{ property.propertyType }} • {{ property.location }}</span>
+            <span>${{ property.price }}/night</span>
+            <span class="status"
+              [class.confirmed]="property.verificationStatus === 'verified'"
+              [class.pending]="property.verificationStatus === 'pending'"
+              [class.declined]="property.verificationStatus === 'not_submitted' || property.verificationStatus === 'rejected'">
+              ● {{ property.verificationStatus || 'not_submitted' }}
+            </span>
+            <div>
+              <a [routerLink]="['/host/verification']" [queryParams]="{ propertyId: property._id }" class="approve" style="text-decoration:none; padding:4px 8px;">
+                Verify
+              </a>
+            </div>
+          </div>
+        } @empty {
+          <div style="padding:20px; text-align:center; color:#888;">No properties created yet. <a routerLink="/host/properties">Add your first property</a></div>
+        }
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top:24px;">
+      <div class="panel-head">
+        <h2>Recent Bookings</h2>
+        <a routerLink="/host/bookings">View all →</a>
+      </div>
+      <div class="booking-table">
+        <div class="table-head">
+          <span>Guest</span>
+          <span>Property</span>
+          <span>Dates</span>
+          <span>Status</span>
+          <span>Action</span>
+        </div>
+        @for (booking of bookings().slice(0, 5); track booking._id) {
+          <div class="table-row">
+            <strong>{{ booking.guest?.name || 'Guest' }}</strong>
+            <span>{{ booking.property?.title || 'Property' }}</span>
+            <span>{{ booking.checkIn }} – {{ booking.checkOut }}</span>
+            <span class="status"
+              [class.pending]="booking.status==='pending'"
+              [class.confirmed]="booking.status==='confirmed'"
+              [class.declined]="booking.status==='declined' || booking.status==='cancelled'">
+              ● {{ booking.status }}
+            </span>
+            <div>
+              @if (booking.status === 'pending') {
+                <button class="approve" (click)="approve(booking._id)">Approve</button>
+                <button class="decline" (click)="decline(booking._id)">Decline</button>
+              } @else {
+                <span class="dash">—</span>
+              }
+            </div>
+          </div>
+        } @empty {
+          <div style="padding:20px; text-align:center; color:#888;">No recent bookings found.</div>
+        }
+      </div>
+    </section>
+  </main>
+</div>

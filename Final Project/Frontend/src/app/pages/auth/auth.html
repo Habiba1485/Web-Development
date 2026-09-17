@@ -1,0 +1,78 @@
+<div class="auth-page">
+  <section class="auth-image">
+    <img src="https://images.unsplash.com/photo-1560184897-502a475f7a0d?w=900&h=1200&fit=crop&auto=format" alt="Cozy vacation bedroom">
+    <div class="auth-overlay"></div>
+    <div class="auth-brand">StayBook</div>
+    <div class="quote-block">
+      <div class="quote-line"></div>
+      <p>"Every great trip starts with the perfect place to stay."</p>
+      <div class="quote-person">
+        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=80&h=80&fit=crop&auto=format" alt="Guest">
+        <div><strong>Sophie Laurent</strong><span>Paris, France · 47 stays</span></div>
+      </div>
+      <div class="auth-stats">
+        <div><strong>2M+</strong><span>Happy guests</span></div>
+        <div><strong>180+</strong><span>Countries</span></div>
+        <div><strong>4.9</strong><span>Avg. rating</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="auth-form-side">
+    <div class="auth-form">
+      <a routerLink="/home" class="mobile-logo">StayBook</a>
+      <h1>{{ mode() === 'signin' ? 'Welcome back' : 'Create an account' }}</h1>
+      <p class="subheading">{{ mode() === 'signin' ? 'Sign in to manage your bookings and properties.' : 'Join StayBook and start discovering the world.' }}</p>
+
+      <div class="mode-tabs">
+        <button type="button" [class.active]="mode() === 'signin'" (click)="toggleMode('signin')">Sign In</button>
+        <button type="button" [class.active]="mode() === 'register'" (click)="toggleMode('register')">Sign Up</button>
+      </div>
+
+      @if (mode() === 'register') {
+        <div class="account-tabs">
+          <button type="button" [class.active]="role === 'guest'" (click)="role = 'guest'">🧳 Guest Account</button>
+          <button type="button" [class.active]="role === 'host'" (click)="role = 'host'">🏠 Host Account</button>
+        </div>
+      }
+
+      <form (ngSubmit)="submit()">
+        @if (mode() === 'register') {
+          <label>Full name
+            <input name="name" [(ngModel)]="name" required placeholder="Sarah Johnson">
+          </label>
+          <label>Phone number
+            <input name="phone" [(ngModel)]="phone" placeholder="+20 10 0000 0000">
+          </label>
+        }
+
+        <label>Email address
+          <input type="email" name="email" [(ngModel)]="email" required placeholder="sarah@example.com">
+        </label>
+
+        <label>Password
+          <span class="password-wrap">
+            <input type="password" name="password" [(ngModel)]="password" required placeholder="••••••••">
+          </span>
+        </label>
+
+        @if (errorMessage()) {
+          <p class="form-error" style="color:red; margin-top:10px;">{{ errorMessage() }}</p>
+        }
+
+        <button type="submit" class="submit-button" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Processing...' : (mode() === 'signin' ? 'Sign In' : 'Create Account') }}
+        </button>
+      </form>
+
+      <p class="account-note">
+        {{ mode() === 'signin' ? "Don't have an account?" : 'Already have an account?' }}
+        <button type="button" (click)="toggleMode(mode() === 'signin' ? 'register' : 'signin')">
+          {{ mode() === 'signin' ? 'Sign up for free' : 'Sign in' }}
+        </button>
+      </p>
+
+      <a routerLink="/home" class="back-home">← Back to StayBook</a>
+    </div>
+  </section>
+</div>

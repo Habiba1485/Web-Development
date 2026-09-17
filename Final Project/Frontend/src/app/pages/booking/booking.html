@@ -1,0 +1,82 @@
+<div class="flow-page">
+  <header class="site-header">
+    <div class="container inner">
+      <a routerLink="/home" class="logo">StayBook</a>
+      <span class="flow-lock">Secure booking</span>
+    </div>
+  </header>
+
+  <main class="container flow-container">
+    <div class="stepbar">
+      <div class="step active"><span>1</span><strong>Trip review</strong></div>
+      <div class="line"></div>
+      <div class="step"><span>2</span><strong>Payment</strong></div>
+      <div class="line"></div>
+      <div class="step"><span>3</span><strong>Confirmed</strong></div>
+    </div>
+
+    <div class="flow-head">
+      <a routerLink="/home" class="back">← Back to properties</a>
+      <h1>Review your trip</h1>
+      <p>Check your stay details before continuing to payment.</p>
+    </div>
+
+    @if (isLoading()) {
+      <div class="loading-state">
+        <p>Loading trip details...</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="error-state">
+        <p>{{ errorMessage() }}</p>
+        <a routerLink="/home" class="primary-button">Back to Home</a>
+      </div>
+    } @else if (property(); as place) {
+      <div class="booking-layout">
+        <section class="booking-main">
+          <div class="summary-card property-summary">
+            <img [src]="getImageUrl(place.images[0])" [alt]="place.title">
+            <div class="property-summary-info">
+              <span class="type-badge">{{ place.propertyType }}</span>
+              <h2>{{ place.title }}</h2>
+              <p>{{ place.location }}</p>
+              <div class="rating">★ {{ place.rating || 5.0 }}</div>
+              <small>Hosted by {{ place.host?.name || place.host || 'StayBook Host' }}</small>
+            </div>
+          </div>
+
+          <section class="summary-card">
+            <div class="section-title-row">
+              <h2>Your trip details</h2>
+            </div>
+            <div class="trip-grid">
+              <div><span>CHECK-IN</span><strong>{{ checkin() }}</strong></div>
+              <div><span>CHECK-OUT</span><strong>{{ checkout() }}</strong></div>
+              <div><span>GUESTS</span><strong>{{ guests() }} guest(s)</strong></div>
+            </div>
+          </section>
+
+          <section class="policy-card">
+            <div class="policy-icon">✓</div>
+            <div>
+              <h3>Free cancellation</h3>
+              <p>Cancel up to 48 hours before check-in for a full refund.</p>
+            </div>
+          </section>
+        </section>
+
+        <aside class="booking-side">
+          <div class="price-card summary-card">
+            <h2>Price summary</h2>
+            <div class="price-line"><span>${{ place.price }} × {{ nights() }} nights</span><strong>${{ subtotal() }}</strong></div>
+            <div class="price-line"><span>Cleaning fee</span><strong>${{ cleaningFee }}</strong></div>
+            <div class="price-line"><span>StayBook service fee</span><strong>${{ serviceFee }}</strong></div>
+            <div class="price-total"><span>Total</span><strong>${{ total() }}</strong></div>
+            <p class="no-charge">You won't be charged yet.</p>
+            <button type="button" class="primary-button full" (click)="continueToPayment()">Continue to payment</button>
+          </div>
+          <div class="secure-note">🔒 Your booking details are protected.</div>
+        </aside>
+      </div>
+    }
+  </main>
+</div>

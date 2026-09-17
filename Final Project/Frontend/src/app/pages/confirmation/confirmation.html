@@ -1,0 +1,58 @@
+<div class="confirmation-page">
+  <header class="site-header">
+    <div class="container inner">
+      <a routerLink="/home" class="logo">StayBook</a>
+      <a routerLink="/trips" class="header-link">My trips →</a>
+    </div>
+  </header>
+
+  <main class="container confirmation-container">
+    <section class="success-head">
+      <div class="success-icon">✓</div>
+      <p class="eyebrow">YOUR RESERVATION IS COMPLETE</p>
+      <h1>Booking confirmed!</h1>
+      <p>Your stay is booked. We can't wait for your stay.</p>
+      <strong>Booking ID #{{ bookingId() }}</strong>
+      <span>Confirmation details have been saved to your account.</span>
+    </section>
+
+    @if (property(); as place) {
+      <section class="confirmed-card">
+        <img [src]="getImageUrl(place.images[0])" [alt]="place.title">
+        <div class="confirmed-info">
+          <span class="type-badge">{{ place.propertyType }}</span>
+          <h2>{{ place.title }}</h2>
+          <p>{{ place.location }}</p>
+          <div>★ {{ place.rating || 5.0 }}</div>
+          <small>Hosted by {{ place.host?.name || place.host || 'StayBook Host' }}</small>
+        </div>
+      </section>
+
+      <div class="confirmation-grid">
+        <section class="details-card">
+          <h2>Your stay</h2>
+          <div class="info-grid">
+            <div><span>CHECK-IN</span><strong>{{ checkin() }}</strong><small>After 3:00 PM</small></div>
+            <div><span>CHECK-OUT</span><strong>{{ checkout() }}</strong><small>Before 11:00 AM</small></div>
+            <div><span>GUESTS</span><strong>{{ guests() }} guest(s)</strong></div>
+          </div>
+          <div class="policy">
+            <strong>Cancellation policy</strong>
+            <p>Free cancellation according to the property's policy. Review details in My Trips.</p>
+          </div>
+        </section>
+
+        <aside class="details-card payment-summary">
+          <h2>Payment summary</h2>
+          <div class="total"><span>Total paid</span><strong>${{ total() || place.price }}</strong></div>
+          <p class="paid">✓ Payment received</p>
+        </aside>
+      </div>
+    }
+
+    <div class="confirmation-actions">
+      <a routerLink="/trips" class="primary-button">View my trip</a>
+      <a routerLink="/home" class="outline-button">Back to home</a>
+    </div>
+  </main>
+</div>

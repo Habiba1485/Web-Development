@@ -1,0 +1,86 @@
+<div class="trip-details-page">
+  <header class="site-header">
+    <div class="container inner">
+      <a routerLink="/trips" class="back-link">← Back to my trips</a>
+      <a routerLink="/home" class="logo">StayBook</a>
+      <span></span>
+    </div>
+  </header>
+
+  <main class="container td-container">
+    @if (isLoading()) {
+      <div class="loading-state">
+        <p>Loading trip details...</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="error-state">
+        <p>{{ errorMessage() }}</p>
+        <a routerLink="/trips" class="primary-button">Back to My Trips</a>
+      </div>
+    } @else if (booking(); as trip) {
+      <div class="title-row">
+        <div>
+          <p class="eyebrow">BOOKING ID #{{ trip._id }}</p>
+          <h1>Trip details</h1>
+        </div>
+        <span class="badge"
+          [class.badge-success]="trip.status==='confirmed'"
+          [class.badge-warning]="trip.status==='pending'"
+          [class.badge-danger]="trip.status==='cancelled' || trip.status==='declined'"
+          [class.badge-neutral]="trip.status==='completed'">
+          ● {{ trip.status }}
+        </span>
+      </div>
+
+      <section class="trip-property">
+        <img [src]="getImageUrl(trip.property?.images ? trip.property.images[0] : '')" [alt]="trip.property?.title || 'Property'">
+        <div>
+          <span class="type-badge">{{ trip.property?.propertyType }}</span>
+          <h2>{{ trip.property?.title }}</h2>
+          <p>{{ trip.property?.location }}</p>
+          <div>★ {{ trip.property?.rating || 5.0 }}</div>
+          <small>Hosted by {{ trip.property?.host?.name || trip.property?.host || 'Host' }}</small>
+        </div>
+      </section>
+
+      <div class="td-grid">
+        <section class="details-card">
+          <h2>Booking details</h2>
+          <div class="info-grid">
+            <div><span>CHECK-IN</span><strong>{{ trip.checkIn | date:'mediumDate' }}</strong></div>
+            <div><span>CHECK-OUT</span><strong>{{ trip.checkOut | date:'mediumDate' }}</strong></div>
+            <div><span>GUESTS</span><strong>{{ trip.guests }} guest(s)</strong></div>
+          </div>
+          <div class="policy">
+            <h3>Cancellation policy</h3>
+            <p><strong>Free cancellation before check-in according to policy.</strong></p>
+          </div>
+        </section>
+
+        <aside>
+          <div class="details-card">
+            <h2>Payment summary</h2>
+            <div class="line-item total">
+              <span>Total price</span>
+              <strong>${{ trip.totalPrice }}</strong>
+            </div>
+          </div>
+
+          <div class="details-card actions">
+            <h3>Actions</h3>
+            @if (trip.property?._id) {
+              <a [routerLink]="['/property', trip.property._id]" class="outline-button">View property page</a>
+            }
+            <button type="button" class="outline-button" (click)="contactHost()">Contact host</button>
+            @if (trip.status === 'confirmed' || trip.status === 'pending') {
+              <button type="button" class="danger-button" (click)="cancelBooking()">Cancel booking</button>
+            }
+            @if (trip.status === 'completed') {
+              <a [routerLink]="['/review', trip._id]" [queryParams]="{ propertyId: trip.property?._id || trip.property }" class="outline-button">Write a review</a>
+            }
+          </div>
+        </aside>
+      </div>
+    }
+  </main>
+</div>

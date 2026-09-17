@@ -1,0 +1,68 @@
+<div class="host-app">
+  <aside class="sidebar">
+    <a routerLink="/home" class="side-logo">StayBook</a>
+    <p class="side-caption">HOST DASHBOARD</p>
+    <nav>
+      <a routerLink="/host">◫ <span>Overview</span></a>
+      <a routerLink="/host/properties">⌂ <span>My Properties</span></a>
+      <a routerLink="/host/bookings" class="active">□ <span>Bookings</span></a>
+      <a routerLink="/host/verification">✓ <span>Property Verification</span></a>
+    </nav>
+    <div class="host-profile" style="margin-top:auto; padding:15px; border-top:1px solid rgba(255,255,255,0.1);">
+      <button type="button" (click)="logout()" style="background:none; border:none; color:#f43f5e; cursor:pointer; font-size:12px; padding:0;">Logout</button>
+    </div>
+  </aside>
+
+  <main class="host-main">
+    <p class="eyebrow">RESERVATIONS</p>
+    <h1>Host Bookings</h1>
+    <p class="subtitle">Manage guest reservations and booking requests.</p>
+
+    <div class="filter-tabs">
+      @for (item of ['all','pending','confirmed','declined','cancelled','completed']; track item) {
+        <button type="button" [class.active]="filter()===item" (click)="filter.set($any(item))">{{ item }}</button>
+      }
+    </div>
+
+    @if (isLoading()) {
+      <div class="loading-state"><p>Loading host bookings...</p></div>
+    } @else if (errorMessage()) {
+      <div class="error-state"><p>{{ errorMessage() }}</p></div>
+    } @else {
+      <div class="booking-cards">
+        @for (booking of visibleBookings(); track booking._id) {
+          <article class="booking-row">
+            <img [src]="getImageUrl(booking.property?.images ? booking.property.images[0] : '')" [alt]="booking.property?.title || 'Property'">
+            <div style="flex:1;">
+              <div class="booking-name">
+                <strong>{{ booking.property?.title || 'Property' }}</strong>
+                <span class="badge"
+                  [class.badge-success]="booking.status==='confirmed'"
+                  [class.badge-warning]="booking.status==='pending'"
+                  [class.badge-danger]="booking.status==='declined' || booking.status==='cancelled'"
+                  [class.badge-neutral]="booking.status==='completed'">
+                  ● {{ booking.status }}
+                </span>
+              </div>
+              <p>Guest: <strong>{{ booking.guest?.name || 'Guest' }}</strong> ({{ booking.guest?.email }})</p>
+              <div class="meta">
+                <span>{{ booking.checkIn | date:'mediumDate' }} – {{ booking.checkOut | date:'mediumDate' }}</span>
+                <span>{{ booking.guests }} guest(s)</span>
+                <strong>Total: ${{ booking.totalPrice }}</strong>
+              </div>
+
+              @if (booking.status==='pending') {
+                <div class="actions" style="margin-top:10px;">
+                  <button class="approve" (click)="setStatus(booking._id, 'confirmed')">Approve</button>
+                  <button class="decline" (click)="setStatus(booking._id, 'declined')">Decline</button>
+                </div>
+              }
+            </div>
+          </article>
+        } @empty {
+          <div class="empty-state">No bookings found matching this filter.</div>
+        }
+      </div>
+    }
+  </main>
+</div>

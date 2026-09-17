@@ -1,0 +1,11 @@
+<div class="guest-dashboard"><header class="site-header"><div class="container inner"><a routerLink="/home" class="logo">StayBook</a><a routerLink="/trips" class="header-link">My trips</a></div></header>
+<section class="guest-hero"><div class="container guest-hero-inner"><div class="guest-avatar">SJ</div><div><p>Welcome back</p><h1>Sarah Johnson</h1><span>Guest · Joined 2024</span></div></div></section>
+<main class="container guest-main">
+  <div class="stat-grid"><div><span>TRIPS</span><strong>{{ trips().length }}</strong><small>All bookings</small></div><div><span>UPCOMING</span><strong>{{ trips().filter(t => t.status === 'confirmed').length }}</strong><small>Ready to go</small></div><div><span>REVIEWS WRITTEN</span><strong>6</strong><small>Keep sharing</small></div></div>
+  <section class="section-block"><div class="section-head"><div><p class="eyebrow">YOUR NEXT ADVENTURE</p><h2>Upcoming trip</h2></div><a routerLink="/trips">See all →</a></div>
+    @if (upcomingTrip; as trip) {
+      <article class="upcoming-card"><img [src]="trip.image" [alt]="trip.propertyTitle"><div class="trip-info"><span class="badge badge-success">● Confirmed</span><h3>{{ trip.propertyTitle }}</h3><p>{{ trip.location }}</p><div class="mini-details"><span>CHECK-IN<strong>{{ trip.checkin }}</strong></span><span>CHECK-OUT<strong>{{ trip.checkout }}</strong></span><span>GUESTS<strong>{{ trip.guests }}</strong></span><span>NIGHTS<strong>{{ trip.nights }}</strong></span></div><a routerLink="/trip-details" [queryParams]="{ bookingId: trip.id }" class="primary-button">View trip</a></div></article>
+    } @else { <div class="empty-state">No upcoming trips yet. <a routerLink="/home">Explore stays.</a></div> }
+  </section>
+  <section class="section-block"><div class="section-head"><div><p class="eyebrow">QUICK ACCESS</p><h2>Quick actions</h2></div></div><div class="quick-grid"><a routerLink="/home" class="quick-card"><span>⌕</span><div><h3>Explore stays</h3><p>Find your next getaway.</p></div><b>→</b></a><a routerLink="/trips" class="quick-card"><span>▣</span><div><h3>View my trips</h3><p>Manage all your bookings.</p></div><b>→</b></a><a routerLink="/home" class="quick-card"><span>♡</span><div><h3>Saved stays</h3><p>Revisit your favorites.</p></div><b>→</b></a></div></section>
+</main></div>
